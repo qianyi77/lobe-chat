@@ -3,15 +3,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { genServerAiProvidersConfig } from './genServerAiProviderConfig';
 
 // Mock dependencies using importOriginal to preserve real provider data
-vi.mock('@/config/aiModels', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/config/aiModels')>();
+vi.mock('model-bank', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('model-bank')>();
   return {
     ...actual,
     // Keep the original exports but we can override specific ones if needed
   };
 });
 
-vi.mock('@/config/llm', () => ({
+vi.mock('@/envs/llm', () => ({
   getLLMConfig: vi.fn(() => ({
     ENABLED_OPENAI: true,
     ENABLED_ANTHROPIC: false,
@@ -19,7 +19,7 @@ vi.mock('@/config/llm', () => ({
   })),
 }));
 
-vi.mock('@/utils/parseModels', () => ({
+vi.mock('@/utils/server/parseModels', () => ({
   extractEnabledModels: vi.fn(async (providerId: string, modelString?: string) => {
     if (!modelString) return undefined;
     return [`${providerId}-model-1`, `${providerId}-model-2`];
@@ -83,7 +83,7 @@ describe('genServerAiProvidersConfig', () => {
     };
 
     // Mock the LLM config to include our custom key
-    const { getLLMConfig } = vi.mocked(await import('@/config/llm'));
+    const { getLLMConfig } = vi.mocked(await import('@/envs/llm'));
     getLLMConfig.mockReturnValue({
       ENABLED_OPENAI: true,
       ENABLED_ANTHROPIC: false,
@@ -98,7 +98,7 @@ describe('genServerAiProvidersConfig', () => {
   it('should use environment variables for model lists', async () => {
     process.env.OPENAI_MODEL_LIST = '+gpt-4,+gpt-3.5-turbo';
 
-    const { extractEnabledModels } = vi.mocked(await import('@/utils/parseModels'));
+    const { extractEnabledModels } = vi.mocked(await import('@/utils/server/parseModels'));
     extractEnabledModels.mockResolvedValue(['gpt-4', 'gpt-3.5-turbo']);
 
     const result = await genServerAiProvidersConfig({});
@@ -116,7 +116,7 @@ describe('genServerAiProvidersConfig', () => {
 
     process.env.CUSTOM_OPENAI_MODELS = '+custom-model';
 
-    const { extractEnabledModels } = vi.mocked(await import('@/utils/parseModels'));
+    const { extractEnabledModels } = vi.mocked(await import('@/utils/server/parseModels'));
 
     await genServerAiProvidersConfig(specificConfig);
 
@@ -133,7 +133,7 @@ describe('genServerAiProvidersConfig', () => {
     process.env.OPENAI_MODEL_LIST = '+gpt-4->deployment1';
 
     const { extractEnabledModels, transformToAiModelList } = vi.mocked(
-      await import('@/utils/parseModels'),
+      await import('@/utils/server/parseModels'),
     );
 
     await genServerAiProvidersConfig(specificConfig);
@@ -189,7 +189,7 @@ describe('genServerAiProvidersConfig Error Handling', () => {
     vi.resetModules();
 
     // Mock dependencies with a missing provider scenario
-    vi.doMock('@/config/aiModels', () => ({
+    vi.doMock('model-bank', () => ({
       // Explicitly set openai to undefined to simulate missing provider
       openai: undefined,
       anthropic: [
@@ -206,13 +206,13 @@ describe('genServerAiProvidersConfig Error Handling', () => {
       getLLMConfig: vi.fn(() => ({})),
     }));
 
-    vi.doMock('@/utils/parseModels', () => ({
+    vi.doMock('@/utils/server/parseModels', () => ({
       extractEnabledModels: vi.fn(async () => undefined),
       transformToAiModelList: vi.fn(async () => []),
     }));
 
     // Mock ModelProvider to include the missing provider
-    vi.doMock('@lobechat/model-runtime', () => ({
+    vi.doMock('model-bank', () => ({
       ModelProvider: {
         openai: 'openai', // This exists in enum
         anthropic: 'anthropic', // This exists in both enum and aiModels

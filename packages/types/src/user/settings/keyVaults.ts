@@ -24,9 +24,23 @@ export interface AWSBedrockKeyVault {
   sessionToken?: string;
 }
 
+export interface VertexAIKeyVault {
+  apiKey?: string;
+  region?: string;
+}
+
 export interface CloudflareKeyVault {
   apiKey?: string;
   baseURLOrAccountID?: string;
+}
+
+export interface ComfyUIKeyVault {
+  apiKey?: string;
+  authType?: 'none' | 'basic' | 'bearer' | 'custom';
+  baseURL?: string;
+  customHeaders?: Record<string, string>;
+  password?: string;
+  username?: string;
 }
 
 export interface SearchEngineKeyVaults {
@@ -41,13 +55,18 @@ export interface UserKeyVaults extends SearchEngineKeyVaults {
   ai302?: OpenAICompatibleKeyVault;
   ai360?: OpenAICompatibleKeyVault;
   aihubmix?: OpenAICompatibleKeyVault;
+  akashchat?: OpenAICompatibleKeyVault;
   anthropic?: OpenAICompatibleKeyVault;
   azure?: AzureOpenAIKeyVault;
   azureai?: AzureOpenAIKeyVault;
   baichuan?: OpenAICompatibleKeyVault;
   bedrock?: AWSBedrockKeyVault;
+  bfl?: any;
+  cerebras?: OpenAICompatibleKeyVault;
   cloudflare?: CloudflareKeyVault;
   cohere?: OpenAICompatibleKeyVault;
+  cometapi?: OpenAICompatibleKeyVault;
+  comfyui?: ComfyUIKeyVault;
   deepseek?: OpenAICompatibleKeyVault;
   fal?: FalKeyVault;
   fireworksai?: OpenAICompatibleKeyVault;
@@ -67,9 +86,12 @@ export interface UserKeyVaults extends SearchEngineKeyVaults {
   mistral?: OpenAICompatibleKeyVault;
   modelscope?: OpenAICompatibleKeyVault;
   moonshot?: OpenAICompatibleKeyVault;
+  nebius?: OpenAICompatibleKeyVault;
+  newapi?: OpenAICompatibleKeyVault;
   novita?: OpenAICompatibleKeyVault;
   nvidia?: OpenAICompatibleKeyVault;
   ollama?: OpenAICompatibleKeyVault;
+  ollamacloud?: OpenAICompatibleKeyVault;
   openai?: OpenAICompatibleKeyVault;
   openrouter?: OpenAICompatibleKeyVault;
   password?: string;
@@ -88,7 +110,8 @@ export interface UserKeyVaults extends SearchEngineKeyVaults {
   togetherai?: OpenAICompatibleKeyVault;
   upstage?: OpenAICompatibleKeyVault;
   v0?: OpenAICompatibleKeyVault;
-  vertexai?: OpenAICompatibleKeyVault;
+  vercelaigateway?: OpenAICompatibleKeyVault;
+  vertexai?: VertexAIKeyVault;
   vllm?: OpenAICompatibleKeyVault;
   volcengine?: OpenAICompatibleKeyVault;
   wenxin?: OpenAICompatibleKeyVault;
